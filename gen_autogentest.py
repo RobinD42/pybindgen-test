@@ -1,5 +1,5 @@
 """
-Test script for generating a wrapper for the code in testclasses.h using gccxml.
+Test script for generating a wrapper for the code in autogentest.h using gccxml.
 """
 
 import sys

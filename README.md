@@ -4,8 +4,8 @@ pybindgen-test
 A repository to hold my test cases, trials and various meanderings and fooling 
 around with pybindgen.
 
-Prerquisites
-------------
+Prerequisites
+-------------
 
 Install the following:
 
