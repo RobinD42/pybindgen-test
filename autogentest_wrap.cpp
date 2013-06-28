@@ -208,6 +208,71 @@ public:
     virtual void virtualMethod2();
 };
 
+
+typedef struct {
+    PyObject_HEAD
+    C *obj;
+    PyObject *inst_dict;
+    PyBindGenWrapperFlags flags:8;
+} PyC;
+
+
+extern PyTypeObject PyC_Type;
+
+class PyC__PythonHelper : public C
+{
+public:
+    PyObject *m_pyself;
+    PyC__PythonHelper(C const & arg0)
+        : C(arg0), m_pyself(NULL)
+        {}
+
+    PyC__PythonHelper()
+        : C(), m_pyself(NULL)
+        {}
+
+    PyC__PythonHelper(int a, int b)
+        : C(a, b), m_pyself(NULL)
+        {}
+
+
+    void set_pyobj(PyObject *pyobj)
+    {
+        Py_XDECREF(m_pyself);
+        Py_INCREF(pyobj);
+        m_pyself = pyobj;
+    }
+
+    virtual ~PyC__PythonHelper()
+    {
+        Py_CLEAR(m_pyself);
+    }
+
+
+    static PyObject * _wrap_protectedVirtualMethod(PyC *self);
+    inline int protectedVirtualMethod__parent_caller()
+    { return C::protectedVirtualMethod(); }
+
+    static PyObject * _wrap_protectedMethod(PyC *self);
+    inline int protectedMethod__parent_caller()
+    { return C::protectedMethod(); }
+
+    virtual int protectedVirtualMethod();
+
+    virtual void virtualMethod1();
+
+    virtual void virtualMethod2();
+};
+
+
+PyObject* _wrap_convert_c2py__B(B *cvalue);
+
+
+int _wrap_convert_py2c__B(PyObject *value, B *address);
+
+
+int _wrap_convert_py2c__B_const___amp__(PyObject *value, B *address);
+
 static PyMethodDef autogentest_std_functions[] = {
     {NULL, NULL, 0, NULL}
 };
@@ -636,6 +701,35 @@ PyB__PythonHelper::virtualMethod2()
         PyGILState_Release(__py_gil_state);
     return;
 }
+static PyObject* _wrap_PyB__get_m_publicAttribute(PyB *self, void * PYBINDGEN_UNUSED(closure))
+{
+    PyObject *py_retval;
+
+    py_retval = Py_BuildValue((char *) "i", self->obj->m_publicAttribute);
+    return py_retval;
+}
+static int _wrap_PyB__set_m_publicAttribute(PyB *self, PyObject *value, void * PYBINDGEN_UNUSED(closure))
+{
+    PyObject *py_retval;
+
+    py_retval = Py_BuildValue((char *) "(O)", value);
+    if (!PyArg_ParseTuple(py_retval, (char *) "i", &self->obj->m_publicAttribute)) {
+        Py_DECREF(py_retval);
+        return -1;
+    }
+    Py_DECREF(py_retval);
+    return 0;
+}
+static PyGetSetDef PyB__getsets[] = {
+    {
+        (char*) "m_publicAttribute", /* attribute name */
+        (getter) _wrap_PyB__get_m_publicAttribute, /* C function to get the attribute */
+        (setter) _wrap_PyB__set_m_publicAttribute, /* C function to set the attribute */
+        NULL, /* optional doc string */
+        NULL /* optional additional data for getter and setter */
+    },
+    { NULL, NULL, NULL, NULL, NULL }
+};
 
 
 static int
@@ -756,14 +850,13 @@ int _wrap_PyB__tp_init(PyB *self, PyObject *args, PyObject *kwargs)
 
 
 PyObject *
-_wrap_PyB_virtualMethod1(PyB *self)
+_wrap_PyB___int__(PyB *self)
 {
     PyObject *py_retval;
-    PyB__PythonHelper *helper_class = dynamic_cast<PyB__PythonHelper*> (self->obj);
+    int retval;
 
-    (helper_class == NULL)? (self->obj->virtualMethod1()) : (self->obj->B::virtualMethod1());
-    Py_INCREF(Py_None);
-    py_retval = Py_None;
+    retval = self->obj->__int__();
+    py_retval = Py_BuildValue((char *) "i", retval);
     return py_retval;
 }
 
@@ -869,6 +962,18 @@ PyObject * _wrap_PyB_overloadedMethod(PyB *self, PyObject *args, PyObject *kwarg
 
 
 PyObject *
+_wrap_PyB_staticMethod(void)
+{
+    PyObject *py_retval;
+
+    B::staticMethod();
+    Py_INCREF(Py_None);
+    py_retval = Py_None;
+    return py_retval;
+}
+
+
+PyObject *
 _wrap_PyB_defaultArgs(PyB *self, PyObject *args, PyObject *kwargs)
 {
     PyObject *py_retval;
@@ -880,6 +985,31 @@ _wrap_PyB_defaultArgs(PyB *self, PyObject *args, PyObject *kwargs)
         return NULL;
     }
     self->obj->defaultArgs(a, b);
+    Py_INCREF(Py_None);
+    py_retval = Py_None;
+    return py_retval;
+}
+
+
+PyObject *
+_wrap_PyB___len__(PyB *self)
+{
+    PyObject *py_retval;
+    int retval;
+
+    retval = self->obj->__len__();
+    py_retval = Py_BuildValue((char *) "i", retval);
+    return py_retval;
+}
+
+
+PyObject *
+_wrap_PyB_virtualMethod1(PyB *self)
+{
+    PyObject *py_retval;
+    PyB__PythonHelper *helper_class = dynamic_cast<PyB__PythonHelper*> (self->obj);
+
+    (helper_class == NULL)? (self->obj->virtualMethod1()) : (self->obj->B::virtualMethod1());
     Py_INCREF(Py_None);
     py_retval = Py_None;
     return py_retval;
@@ -899,9 +1029,11 @@ _wrap_PyB__copy__(PyB *self)
 }
 
 static PyMethodDef PyB_methods[] = {
-    {(char *) "virtualMethod1", (PyCFunction) _wrap_PyB_virtualMethod1, METH_NOARGS, NULL },
+    {(char *) "__int__", (PyCFunction) _wrap_PyB___int__, METH_NOARGS, NULL },
     {(char *) "overloadedMethod", (PyCFunction) _wrap_PyB_overloadedMethod, METH_KEYWORDS|METH_VARARGS, NULL },
+    {(char *) "staticMethod", (PyCFunction) _wrap_PyB_staticMethod, METH_NOARGS|METH_STATIC, NULL },
     {(char *) "defaultArgs", (PyCFunction) _wrap_PyB_defaultArgs, METH_KEYWORDS|METH_VARARGS, NULL },
+    {(char *) "virtualMethod1", (PyCFunction) _wrap_PyB_virtualMethod1, METH_NOARGS, NULL },
     {(char *) "__copy__", (PyCFunction) _wrap_PyB__copy__, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
@@ -980,6 +1112,151 @@ _wrap_PyB__tp_richcompare (PyB *PYBINDGEN_UNUSED(self), PyB *other, int opid)
     return Py_NotImplemented;
 }
 
+
+PyObject* _wrap_convert_c2py__B(B *cvalue)
+{
+    PyObject *py_retval;
+    PyB *py_B;
+
+    py_B = PyObject_GC_New(PyB, &PyB_Type);
+    py_B->inst_dict = NULL;
+    py_B->flags = PYBINDGEN_WRAPPER_FLAG_NONE;
+    py_B->obj = new B(*cvalue);
+    py_retval = Py_BuildValue((char *) "N", py_B);
+    return py_retval;
+}
+
+
+int _wrap_convert_py2c__B(PyObject *value, B *address)
+{
+    PyObject *py_retval;
+    PyB *tmp_B;
+
+    py_retval = Py_BuildValue((char *) "(O)", value);
+    if (!PyArg_ParseTuple(py_retval, (char *) "O!", &PyB_Type, &tmp_B)) {
+        Py_DECREF(py_retval);
+        return 0;
+    }
+    *address = *tmp_B->obj;
+    Py_DECREF(py_retval);
+    return 1;
+}
+
+
+int _wrap_convert_py2c__B_const___amp__(PyObject *value, B *address)
+{
+    PyObject *py_retval;
+    PyB *tmp_B;
+
+    py_retval = Py_BuildValue((char *) "(O)", value);
+    if (!PyArg_ParseTuple(py_retval, (char *) "O!", &PyB_Type, &tmp_B)) {
+        Py_DECREF(py_retval);
+        return 0;
+    }
+    *address = *tmp_B->obj;
+    Py_DECREF(py_retval);
+    return 1;
+}
+
+static PyObject*
+B__nb_add (PyObject *py_left, PyObject *py_right)
+{
+    {
+        B left;
+        B right;
+        if (_wrap_convert_py2c__B(py_left, &left) && _wrap_convert_py2c__B_const___amp__(py_right, &right)) {
+            B result = (left + right);
+            return _wrap_convert_c2py__B(&result);
+        }
+        PyErr_Clear();
+    }
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+}
+static PyNumberMethods B__py_number_methods = {
+    (binaryfunc) B__nb_add,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (ternaryfunc) NULL,
+    (unaryfunc) NULL,
+    (unaryfunc) NULL,
+    (unaryfunc) NULL,
+    (inquiry) NULL,
+    (unaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (coercion) NULL,
+    (unaryfunc) NULL,
+    (unaryfunc) NULL,
+    (unaryfunc) NULL,
+    (unaryfunc) NULL,
+    (unaryfunc) NULL,
+    /* Added in release 2.0 */
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (ternaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+
+    /* Added in release 2.2 */
+    /* The following require the Py_TPFLAGS_HAVE_CLASS flag */
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+    (binaryfunc) NULL,
+
+#if PY_VERSION_HEX >= 0x020500F0
+    /* Added in release 2.5 */
+    (unaryfunc) NULL,
+
+#endif
+};
+
+
+static Py_ssize_t
+B__sq_length (PyB *py_self)
+{
+    PyObject *py_result;
+    Py_ssize_t result;
+
+    py_result = _wrap_PyB___len__(py_self);
+    if (py_result == NULL) {
+        return -1;
+    }
+    result = PyInt_AsSsize_t(py_result);
+    Py_DECREF(py_result);
+    return result;
+}
+
+
+
+static PySequenceMethods B__py_sequence_methods = {
+    (lenfunc) B__sq_length,
+    (binaryfunc) NULL,
+    (ssizeargfunc) NULL,
+    (ssizeargfunc) NULL,
+    (ssizessizeargfunc) NULL,
+    (ssizeobjargproc) NULL,
+    (ssizessizeobjargproc) NULL,
+    (objobjproc) NULL,
+    /* Added in release 2.0 */
+    (binaryfunc) NULL,
+    (ssizeargfunc) NULL,
+};
+
+
 PyTypeObject PyB_Type = {
     PyObject_HEAD_INIT(NULL)
     0,                                 /* ob_size */
@@ -988,6 +1265,429 @@ PyTypeObject PyB_Type = {
     0,                                 /* tp_itemsize */
     /* methods */
     (destructor)_wrap_PyB__tp_dealloc,        /* tp_dealloc */
+    (printfunc)0,                      /* tp_print */
+    (getattrfunc)NULL,       /* tp_getattr */
+    (setattrfunc)NULL,       /* tp_setattr */
+    (cmpfunc)NULL,           /* tp_compare */
+    (reprfunc)NULL,             /* tp_repr */
+    (PyNumberMethods*)&B__py_number_methods,     /* tp_as_number */
+    (PySequenceMethods*)&B__py_sequence_methods, /* tp_as_sequence */
+    (PyMappingMethods*)NULL,   /* tp_as_mapping */
+    (hashfunc)NULL,             /* tp_hash */
+    (ternaryfunc)NULL,          /* tp_call */
+    (reprfunc)NULL,              /* tp_str */
+    (getattrofunc)NULL,     /* tp_getattro */
+    (setattrofunc)NULL,     /* tp_setattro */
+    (PyBufferProcs*)NULL,  /* tp_as_buffer */
+    Py_TPFLAGS_BASETYPE|Py_TPFLAGS_DEFAULT|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_GC,                      /* tp_flags */
+    NULL,                        /* Documentation string */
+    (traverseproc)PyB__tp_traverse,     /* tp_traverse */
+    (inquiry)PyB__tp_clear,             /* tp_clear */
+    (richcmpfunc)_wrap_PyB__tp_richcompare,   /* tp_richcompare */
+    0,             /* tp_weaklistoffset */
+    (getiterfunc)NULL,          /* tp_iter */
+    (iternextfunc)NULL,     /* tp_iternext */
+    (struct PyMethodDef*)PyB_methods, /* tp_methods */
+    (struct PyMemberDef*)0,              /* tp_members */
+    PyB__getsets,                     /* tp_getset */
+    NULL,                              /* tp_base */
+    NULL,                              /* tp_dict */
+    (descrgetfunc)NULL,    /* tp_descr_get */
+    (descrsetfunc)NULL,    /* tp_descr_set */
+    offsetof(PyB, inst_dict),                 /* tp_dictoffset */
+    (initproc)_wrap_PyB__tp_init,             /* tp_init */
+    (allocfunc)PyType_GenericAlloc,           /* tp_alloc */
+    (newfunc)PyType_GenericNew,               /* tp_new */
+    (freefunc)0,             /* tp_free */
+    (inquiry)NULL,             /* tp_is_gc */
+    NULL,                              /* tp_bases */
+    NULL,                              /* tp_mro */
+    NULL,                              /* tp_cache */
+    NULL,                              /* tp_subclasses */
+    NULL,                              /* tp_weaklist */
+    (destructor) NULL                  /* tp_del */
+};
+
+
+
+
+PyObject *
+PyC__PythonHelper::_wrap_protectedVirtualMethod(PyC *self)
+{
+    PyObject *py_retval;
+    int retval;
+    PyC__PythonHelper *helper = dynamic_cast< PyC__PythonHelper* >(self->obj);
+
+    if (helper == NULL) {
+        PyErr_SetString(PyExc_TypeError, "Method protectedVirtualMethod of class C is protected and can only be called by a subclass");
+        return NULL;
+    }
+    retval = helper->protectedVirtualMethod__parent_caller();
+    py_retval = Py_BuildValue((char *) "i", retval);
+    return py_retval;
+}
+
+PyObject *
+PyC__PythonHelper::_wrap_protectedMethod(PyC *self)
+{
+    PyObject *py_retval;
+    int retval;
+    PyC__PythonHelper *helper = dynamic_cast< PyC__PythonHelper* >(self->obj);
+
+    if (helper == NULL) {
+        PyErr_SetString(PyExc_TypeError, "Method protectedMethod of class C is protected and can only be called by a subclass");
+        return NULL;
+    }
+    retval = helper->protectedMethod__parent_caller();
+    py_retval = Py_BuildValue((char *) "i", retval);
+    return py_retval;
+}
+
+int
+PyC__PythonHelper::protectedVirtualMethod()
+{
+    PyGILState_STATE __py_gil_state;
+    PyObject *py_method;
+    C *self_obj_before;
+    PyObject *py_retval;
+    int retval;
+
+    __py_gil_state = (PyEval_ThreadsInitialized() ? PyGILState_Ensure() : (PyGILState_STATE) 0);
+    py_method = PyObject_GetAttrString(m_pyself, (char *) "protectedVirtualMethod"); PyErr_Clear();
+    if (py_method == NULL || py_method->ob_type == &PyCFunction_Type) {
+        Py_XDECREF(py_method);
+        if (PyEval_ThreadsInitialized())
+            PyGILState_Release(__py_gil_state);
+        return C::protectedVirtualMethod();
+    }
+    self_obj_before = reinterpret_cast< PyC* >(m_pyself)->obj;
+    reinterpret_cast< PyC* >(m_pyself)->obj = (C*) this;
+    py_retval = PyObject_CallMethod(m_pyself, (char *) "protectedVirtualMethod", (char *) "");
+    if (py_retval == NULL) {
+        PyErr_Print();
+        reinterpret_cast< PyC* >(m_pyself)->obj = self_obj_before;
+        Py_XDECREF(py_method);
+        if (PyEval_ThreadsInitialized())
+            PyGILState_Release(__py_gil_state);
+        return C::protectedVirtualMethod();
+    }
+    py_retval = Py_BuildValue((char*) "(N)", py_retval);
+    if (!PyArg_ParseTuple(py_retval, (char *) "i", &retval)) {
+        PyErr_Print();
+        Py_DECREF(py_retval);
+        reinterpret_cast< PyC* >(m_pyself)->obj = self_obj_before;
+        Py_XDECREF(py_method);
+        if (PyEval_ThreadsInitialized())
+            PyGILState_Release(__py_gil_state);
+        return C::protectedVirtualMethod();
+    }
+    Py_DECREF(py_retval);
+    reinterpret_cast< PyC* >(m_pyself)->obj = self_obj_before;
+    Py_XDECREF(py_method);
+    if (PyEval_ThreadsInitialized())
+        PyGILState_Release(__py_gil_state);
+    return retval;
+}
+
+void
+PyC__PythonHelper::virtualMethod1()
+{
+    PyGILState_STATE __py_gil_state;
+    PyObject *py_method;
+    B *self_obj_before;
+    PyObject *py_retval;
+
+    __py_gil_state = (PyEval_ThreadsInitialized() ? PyGILState_Ensure() : (PyGILState_STATE) 0);
+    py_method = PyObject_GetAttrString(m_pyself, (char *) "virtualMethod1"); PyErr_Clear();
+    if (py_method == NULL || py_method->ob_type == &PyCFunction_Type) {
+        B::virtualMethod1();
+    Py_XDECREF(py_method);
+    if (PyEval_ThreadsInitialized())
+        PyGILState_Release(__py_gil_state);
+        return;
+    }
+    self_obj_before = reinterpret_cast< PyB* >(m_pyself)->obj;
+    reinterpret_cast< PyB* >(m_pyself)->obj = (B*) this;
+    py_retval = PyObject_CallMethod(m_pyself, (char *) "virtualMethod1", (char *) "");
+    if (py_retval == NULL) {
+        PyErr_Print();
+        reinterpret_cast< PyB* >(m_pyself)->obj = self_obj_before;
+        Py_XDECREF(py_method);
+        if (PyEval_ThreadsInitialized())
+            PyGILState_Release(__py_gil_state);
+        return;
+    }
+    if (py_retval != Py_None) {
+        PyErr_SetString(PyExc_TypeError, "function/method should return None");
+        Py_DECREF(py_retval);
+        reinterpret_cast< PyB* >(m_pyself)->obj = self_obj_before;
+        Py_XDECREF(py_method);
+        if (PyEval_ThreadsInitialized())
+            PyGILState_Release(__py_gil_state);
+        return;
+    }
+    Py_DECREF(py_retval);
+    reinterpret_cast< PyB* >(m_pyself)->obj = self_obj_before;
+    Py_XDECREF(py_method);
+    if (PyEval_ThreadsInitialized())
+        PyGILState_Release(__py_gil_state);
+    return;
+}
+
+void
+PyC__PythonHelper::virtualMethod2()
+{
+    PyGILState_STATE __py_gil_state;
+    PyObject *py_method;
+    A *self_obj_before;
+    PyObject *py_retval;
+
+    __py_gil_state = (PyEval_ThreadsInitialized() ? PyGILState_Ensure() : (PyGILState_STATE) 0);
+    py_method = PyObject_GetAttrString(m_pyself, (char *) "virtualMethod2"); PyErr_Clear();
+    if (py_method == NULL || py_method->ob_type == &PyCFunction_Type) {
+        A::virtualMethod2();
+    Py_XDECREF(py_method);
+    if (PyEval_ThreadsInitialized())
+        PyGILState_Release(__py_gil_state);
+        return;
+    }
+    self_obj_before = reinterpret_cast< PyA* >(m_pyself)->obj;
+    reinterpret_cast< PyA* >(m_pyself)->obj = (A*) this;
+    py_retval = PyObject_CallMethod(m_pyself, (char *) "virtualMethod2", (char *) "");
+    if (py_retval == NULL) {
+        PyErr_Print();
+        reinterpret_cast< PyA* >(m_pyself)->obj = self_obj_before;
+        Py_XDECREF(py_method);
+        if (PyEval_ThreadsInitialized())
+            PyGILState_Release(__py_gil_state);
+        return;
+    }
+    if (py_retval != Py_None) {
+        PyErr_SetString(PyExc_TypeError, "function/method should return None");
+        Py_DECREF(py_retval);
+        reinterpret_cast< PyA* >(m_pyself)->obj = self_obj_before;
+        Py_XDECREF(py_method);
+        if (PyEval_ThreadsInitialized())
+            PyGILState_Release(__py_gil_state);
+        return;
+    }
+    Py_DECREF(py_retval);
+    reinterpret_cast< PyA* >(m_pyself)->obj = self_obj_before;
+    Py_XDECREF(py_method);
+    if (PyEval_ThreadsInitialized())
+        PyGILState_Release(__py_gil_state);
+    return;
+}
+
+
+static int
+_wrap_PyC__tp_init__0(PyC *self, PyObject *args, PyObject *kwargs, PyObject **return_exception)
+{
+    PyC *arg0;
+    const char *keywords[] = {"arg0", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, (char *) "O!", (char **) keywords, &PyC_Type, &arg0)) {
+        {
+            PyObject *exc_type, *traceback;
+            PyErr_Fetch(&exc_type, return_exception, &traceback);
+            Py_XDECREF(exc_type);
+            Py_XDECREF(traceback);
+        }
+        return -1;
+    }
+    if (self->ob_type != &PyC_Type)
+    {
+        self->obj = new PyC__PythonHelper(*((PyC *) arg0)->obj);
+        self->flags = PYBINDGEN_WRAPPER_FLAG_NONE;
+        ((PyC__PythonHelper*) self->obj)->set_pyobj((PyObject *)self);
+    } else {
+        // visibility: 'public'
+        self->obj = new C(*((PyC *) arg0)->obj);
+        self->flags = PYBINDGEN_WRAPPER_FLAG_NONE;
+    }
+    return 0;
+}
+
+static int
+_wrap_PyC__tp_init__1(PyC *self, PyObject *args, PyObject *kwargs, PyObject **return_exception)
+{
+    const char *keywords[] = {NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, (char *) "", (char **) keywords)) {
+        {
+            PyObject *exc_type, *traceback;
+            PyErr_Fetch(&exc_type, return_exception, &traceback);
+            Py_XDECREF(exc_type);
+            Py_XDECREF(traceback);
+        }
+        return -1;
+    }
+    if (self->ob_type != &PyC_Type)
+    {
+        self->obj = new PyC__PythonHelper();
+        self->flags = PYBINDGEN_WRAPPER_FLAG_NONE;
+        ((PyC__PythonHelper*) self->obj)->set_pyobj((PyObject *)self);
+    } else {
+        // visibility: 'public'
+        self->obj = new C();
+        self->flags = PYBINDGEN_WRAPPER_FLAG_NONE;
+    }
+    return 0;
+}
+
+static int
+_wrap_PyC__tp_init__2(PyC *self, PyObject *args, PyObject *kwargs, PyObject **return_exception)
+{
+    int a;
+    int b;
+    const char *keywords[] = {"a", "b", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, (char *) "ii", (char **) keywords, &a, &b)) {
+        {
+            PyObject *exc_type, *traceback;
+            PyErr_Fetch(&exc_type, return_exception, &traceback);
+            Py_XDECREF(exc_type);
+            Py_XDECREF(traceback);
+        }
+        return -1;
+    }
+    if (self->ob_type != &PyC_Type)
+    {
+        self->obj = new PyC__PythonHelper(a, b);
+        self->flags = PYBINDGEN_WRAPPER_FLAG_NONE;
+        ((PyC__PythonHelper*) self->obj)->set_pyobj((PyObject *)self);
+    } else {
+        // visibility: 'public'
+        self->obj = new C(a, b);
+        self->flags = PYBINDGEN_WRAPPER_FLAG_NONE;
+    }
+    return 0;
+}
+
+int _wrap_PyC__tp_init(PyC *self, PyObject *args, PyObject *kwargs)
+{
+    int retval;
+    PyObject *error_list;
+    PyObject *exceptions[3] = {0,};
+    retval = _wrap_PyC__tp_init__0(self, args, kwargs, &exceptions[0]);
+    if (!exceptions[0]) {
+        return retval;
+    }
+    retval = _wrap_PyC__tp_init__1(self, args, kwargs, &exceptions[1]);
+    if (!exceptions[1]) {
+        Py_DECREF(exceptions[0]);
+        return retval;
+    }
+    retval = _wrap_PyC__tp_init__2(self, args, kwargs, &exceptions[2]);
+    if (!exceptions[2]) {
+        Py_DECREF(exceptions[0]);
+        Py_DECREF(exceptions[1]);
+        return retval;
+    }
+    error_list = PyList_New(3);
+    PyList_SET_ITEM(error_list, 0, PyObject_Str(exceptions[0]));
+    Py_DECREF(exceptions[0]);
+    PyList_SET_ITEM(error_list, 1, PyObject_Str(exceptions[1]));
+    Py_DECREF(exceptions[1]);
+    PyList_SET_ITEM(error_list, 2, PyObject_Str(exceptions[2]));
+    Py_DECREF(exceptions[2]);
+    PyErr_SetObject(PyExc_TypeError, error_list);
+    Py_DECREF(error_list);
+    return -1;
+}
+
+
+static PyObject*
+_wrap_PyC__copy__(PyC *self)
+{
+
+    PyC *py_copy;
+    py_copy = PyObject_GC_New(PyC, &PyC_Type);
+    py_copy->obj = new C(*self->obj);
+    py_copy->inst_dict = NULL;
+    py_copy->flags = PYBINDGEN_WRAPPER_FLAG_NONE;
+    return (PyObject*) py_copy;
+}
+
+static PyMethodDef PyC_methods[] = {
+    {(char *) "protectedVirtualMethod", (PyCFunction) PyC__PythonHelper::_wrap_protectedVirtualMethod, METH_NOARGS, NULL },
+    {(char *) "protectedMethod", (PyCFunction) PyC__PythonHelper::_wrap_protectedMethod, METH_NOARGS, NULL },
+    {(char *) "__copy__", (PyCFunction) _wrap_PyC__copy__, METH_NOARGS, NULL},
+    {NULL, NULL, 0, NULL}
+};
+
+static void
+PyC__tp_clear(PyC *self)
+{
+    Py_CLEAR(self->inst_dict);
+        C *tmp = self->obj;
+    self->obj = NULL;
+    if (!(self->flags&PYBINDGEN_WRAPPER_FLAG_OBJECT_NOT_OWNED)) {
+        delete tmp;
+    }
+}
+
+
+static int
+PyC__tp_traverse(PyC *self, visitproc visit, void *arg)
+{
+    Py_VISIT(self->inst_dict);
+
+    if (self->obj && typeid(*self->obj).name() == typeid(PyC__PythonHelper).name() )
+        Py_VISIT((PyObject *) self);
+
+    return 0;
+}
+
+
+static void
+_wrap_PyC__tp_dealloc(PyC *self)
+{
+    PyC__tp_clear(self);
+    self->ob_type->tp_free((PyObject*)self);
+}
+
+static PyObject*
+_wrap_PyC__tp_richcompare (PyC *PYBINDGEN_UNUSED(self), PyC *other, int opid)
+{
+
+    if (!PyObject_IsInstance((PyObject*) other, (PyObject*) &PyC_Type)) {
+        Py_INCREF(Py_NotImplemented);
+        return Py_NotImplemented;
+    }
+    switch (opid)
+    {
+    case Py_LT:
+        Py_INCREF(Py_NotImplemented);
+        return Py_NotImplemented;
+    case Py_LE:
+        Py_INCREF(Py_NotImplemented);
+        return Py_NotImplemented;
+    case Py_EQ:
+        Py_INCREF(Py_NotImplemented);
+        return Py_NotImplemented;
+    case Py_NE:
+        Py_INCREF(Py_NotImplemented);
+        return Py_NotImplemented;
+    case Py_GE:
+        Py_INCREF(Py_NotImplemented);
+        return Py_NotImplemented;
+    case Py_GT:
+        Py_INCREF(Py_NotImplemented);
+        return Py_NotImplemented;
+    } /* closes switch (opid) */
+    Py_INCREF(Py_NotImplemented);
+    return Py_NotImplemented;
+}
+
+PyTypeObject PyC_Type = {
+    PyObject_HEAD_INIT(NULL)
+    0,                                 /* ob_size */
+    (char *) "autogentest.C",            /* tp_name */
+    sizeof(PyC),                  /* tp_basicsize */
+    0,                                 /* tp_itemsize */
+    /* methods */
+    (destructor)_wrap_PyC__tp_dealloc,        /* tp_dealloc */
     (printfunc)0,                      /* tp_print */
     (getattrfunc)NULL,       /* tp_getattr */
     (setattrfunc)NULL,       /* tp_setattr */
@@ -1004,21 +1704,21 @@ PyTypeObject PyB_Type = {
     (PyBufferProcs*)NULL,  /* tp_as_buffer */
     Py_TPFLAGS_BASETYPE|Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_GC,                      /* tp_flags */
     NULL,                        /* Documentation string */
-    (traverseproc)PyB__tp_traverse,     /* tp_traverse */
-    (inquiry)PyB__tp_clear,             /* tp_clear */
-    (richcmpfunc)_wrap_PyB__tp_richcompare,   /* tp_richcompare */
+    (traverseproc)PyC__tp_traverse,     /* tp_traverse */
+    (inquiry)PyC__tp_clear,             /* tp_clear */
+    (richcmpfunc)_wrap_PyC__tp_richcompare,   /* tp_richcompare */
     0,             /* tp_weaklistoffset */
     (getiterfunc)NULL,          /* tp_iter */
     (iternextfunc)NULL,     /* tp_iternext */
-    (struct PyMethodDef*)PyB_methods, /* tp_methods */
+    (struct PyMethodDef*)PyC_methods, /* tp_methods */
     (struct PyMemberDef*)0,              /* tp_members */
     0,                     /* tp_getset */
     NULL,                              /* tp_base */
     NULL,                              /* tp_dict */
     (descrgetfunc)NULL,    /* tp_descr_get */
     (descrsetfunc)NULL,    /* tp_descr_set */
-    offsetof(PyB, inst_dict),                 /* tp_dictoffset */
-    (initproc)_wrap_PyB__tp_init,             /* tp_init */
+    offsetof(PyC, inst_dict),                 /* tp_dictoffset */
+    (initproc)_wrap_PyC__tp_init,             /* tp_init */
     (allocfunc)PyType_GenericAlloc,           /* tp_alloc */
     (newfunc)PyType_GenericNew,               /* tp_new */
     (freefunc)0,             /* tp_free */
@@ -1057,6 +1757,12 @@ initautogentest(void)
         return;
     }
     PyModule_AddObject(m, (char *) "B", (PyObject *) &PyB_Type);
+    /* Register the 'C' class */
+    PyC_Type.tp_base = &PyB_Type;
+    if (PyType_Ready(&PyC_Type)) {
+        return;
+    }
+    PyModule_AddObject(m, (char *) "C", (PyObject *) &PyC_Type);
     submodule = initautogentest_std();
     if (submodule == NULL) {
         return;
