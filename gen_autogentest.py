@@ -24,7 +24,7 @@ def my_module_gen():
     module.add_include('"%s"' % SRC)
 
     output = open(DEST, 'w')
-    pybindgen.write_preamble(FileCodeSink(output))
+    #pybindgen.write_preamble(FileCodeSink(output))
     module.generate(FileCodeSink(output))
 
 if __name__ == '__main__':
