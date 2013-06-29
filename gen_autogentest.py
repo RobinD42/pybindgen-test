@@ -20,11 +20,13 @@ GCCXML = os.path.join(sys.prefix, 'bin', 'gccxml')
 def my_module_gen():
     module_parser = ModuleParser(NAME)
     module = module_parser.parse(
-        [SRC], gccxml_options=dict(gccxml_path=GCCXML))
+        [SRC], 
+        gccxml_options=dict(gccxml_path=GCCXML),
+        #pygen_sink=FileCodeSink(sys.stdout),
+        )
     module.add_include('"%s"' % SRC)
-
+    
     output = open(DEST, 'w')
-    #pybindgen.write_preamble(FileCodeSink(output))
     module.generate(FileCodeSink(output))
 
 if __name__ == '__main__':
