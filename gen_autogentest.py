@@ -10,7 +10,7 @@ from pybindgen import FileCodeSink
 from pybindgen.gccxmlparser import ModuleParser
 
 NAME = 'autogentest'
-SRC = 'autogentest.h'
+SRC  = 'autogentest.h'
 DEST = 'autogentest_wrap.cpp'
 
 # TODO: look for this on the PATH, for now I've just installed it in my VirtualEnv

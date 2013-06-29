@@ -1711,6 +1711,10 @@ PyTypeObject PyC_Type = {
 };
 
 
+/* --- enumerations --- */
+
+
+
 
 
 PyMODINIT_FUNC
@@ -1742,6 +1746,9 @@ initautogentest(void)
         return;
     }
     PyModule_AddObject(m, (char *) "C", (PyObject *) &PyC_Type);
+    PyModule_AddIntConstant(m, (char *) "VALUE1", VALUE1);
+    PyModule_AddIntConstant(m, (char *) "VALUE2", VALUE2);
+    PyModule_AddIntConstant(m, (char *) "VALUE3", VALUE3);
     submodule = initautogentest_std();
     if (submodule == NULL) {
         return;

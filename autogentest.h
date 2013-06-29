@@ -50,7 +50,7 @@ public:
     C() : B() {}
     C(int a, int b) : B(a, b)  {}
 
-    //A* returnBaseClassPtr() { return this; }
+    A* returnBaseClassPtr() { return this; }
     
     void baseClassParameterPtr(const A* ptr) {}
     void baseClassParameterRef(const A& ptr) {}
@@ -64,3 +64,8 @@ protected:
 };
 
 
+enum TestEnum {
+    VALUE1 = 100,
+    VALUE2,
+    VALUE3
+};
