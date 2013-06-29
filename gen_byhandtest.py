@@ -57,16 +57,14 @@ def my_module_gen():
 
 
     C = module.add_class('C', parent=B)
-    B.add_constructor([])
-    B.add_constructor([Parameter.new('int', 'a'), Parameter.new('int', 'b')])
-    B.add_method('returnBaseClassPtr', ReturnValue.new('A*',
-                                                       #caller_owns_return=True
-                                                       reference_existing_object=True
-                                                       ), [])
-        
-    #A* returnBaseClassPtr() { return this; }    
-    #void baseClassParameterPtr(const A* ptr) {}
-    #void baseClassParameterRef(const A& ptr) {}
+    C.add_constructor([])
+    C.add_constructor([Parameter.new('int', 'a'), Parameter.new('int', 'b')])
+    C.add_method('returnBaseClassPtr', 
+                 ReturnValue.new('A*',reference_existing_object=True), 
+                 [])
+    C.add_method('baseClassParameterPtr', None, [Parameter.new('const A*', 'other')])        
+    C.add_method('baseClassParameterRef', None, [Parameter.new('const A&', 'other')])        
+
 
     
     output = open(DEST, 'w')
